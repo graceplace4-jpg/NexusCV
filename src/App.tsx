@@ -19,8 +19,8 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         // Ensure default is 40-year-old formal woman image if not custom or outdated
-        if (!parsed.avatarUrl || parsed.avatarUrl.includes('executive_portrait_avatar')) {
-          parsed.avatarUrl = '/src/assets/images/executive_woman_formal_1792251757360.jpg';
+        if (!parsed.avatarUrl || parsed.avatarUrl.includes('executive_portrait_avatar') || parsed.avatarUrl.startsWith('/src/assets/images/')) {
+          parsed.avatarUrl = '/images/executive_woman_formal_1792251757360.jpg';
         }
         if (!parsed.templateStyle) {
           parsed.templateStyle = 'canva-two-col';

@@ -9,7 +9,7 @@ export const initialCVData: CVData = {
   linkedin: 'linkedin.com/in/jonathan-patterson',
   github: 'github.com/jonathan-patterson',
   website: 'reallygreatsite.com',
-  avatarUrl: '/src/assets/images/executive_woman_formal_1792251757360.jpg',
+  avatarUrl: '/images/executive_woman_formal_1792251757360.jpg',
   templateStyle: 'canva-two-col',
   summary:
     'As a marketing manager, I have had the pleasure of working with a diverse range of clients across various industries. I have developed marketing campaigns for startups as well as established organizations, and have consistently delivered results that exceeded their expectations.',

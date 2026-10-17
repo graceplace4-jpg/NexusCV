@@ -332,7 +332,7 @@ export const CVEditor: React.FC<CVEditorProps> = ({
               </label>
               <div className="flex flex-col sm:flex-row items-center gap-3">
                 <img
-                  src={data.avatarUrl || '/src/assets/images/executive_woman_formal_1792251757360.jpg'}
+                  src={data.avatarUrl ? data.avatarUrl.replace(/^\/src\/assets\/images\//, '/images/') : '/images/executive_woman_formal_1792251757360.jpg'}
                   alt="Avatar"
                   className="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-sm shrink-0"
                 />
@@ -350,7 +350,7 @@ export const CVEditor: React.FC<CVEditorProps> = ({
                       onClick={() =>
                         handlePersonalChange(
                           'avatarUrl',
-                          '/src/assets/images/executive_woman_formal_1792251757360.jpg'
+                          '/images/executive_woman_formal_1792251757360.jpg'
                         )
                       }
                       className="text-[11px] px-2 py-0.5 rounded bg-blue-600/20 text-blue-300 border border-blue-500/40 hover:bg-blue-600/30 transition-colors"

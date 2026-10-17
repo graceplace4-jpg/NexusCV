@@ -16,10 +16,11 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
   const currentStyle: TemplateStyle = data.templateStyle || templateStyle || 'canva-two-col';
 
   // Fallback avatar URL is the 40-year-old formal executive woman portrait
+  const cleanAvatarUrl = (data.avatarUrl || '').replace(/^\/src\/assets\/images\//, '/images/');
   const avatarImageSrc =
-    data.avatarUrl && !data.avatarUrl.includes('executive_portrait_avatar')
-      ? data.avatarUrl
-      : '/src/assets/images/executive_woman_formal_1792251757360.jpg';
+    cleanAvatarUrl && !cleanAvatarUrl.includes('executive_portrait_avatar')
+      ? cleanAvatarUrl
+      : '/images/executive_woman_formal_1792251757360.jpg';
 
   // ==========================================
   // FORMAT 1: CANVA 2-COLUMN (ESTILO ADJUNTO)
@@ -41,7 +42,7 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
                   onError={(e) => {
                     // Fallback to formal woman image
                     (e.target as HTMLImageElement).src =
-                      '/src/assets/images/executive_woman_formal_1792251757360.jpg';
+                      '/images/executive_woman_formal_1792251757360.jpg';
                   }}
                 />
                 <span className="sr-only">Foto formal de perfil profesional</span>

@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
-import { createServer as createViteServer } from 'vite';
 
 dotenv.config();
 
@@ -469,7 +468,7 @@ Reglas estrictas:
       linkedin: parsed.linkedin || '',
       github: parsed.github || '',
       website: parsed.website || '',
-      avatarUrl: parsed.avatarUrl || '/src/assets/images/executive_portrait_avatar_1792197555072.jpg',
+      avatarUrl: parsed.avatarUrl || '/images/executive_woman_formal_1792251757360.jpg',
       summary: parsed.summary || '',
       experiences: (parsed.experiences || []).map((e: any, idx: number) => ({
         ...e,
@@ -578,6 +577,7 @@ async function startServer() {
   const isProd = process.env.NODE_ENV === 'production';
 
   if (!isProd) {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
@@ -596,4 +596,9 @@ async function startServer() {
   });
 }
 
-startServer();
+// Only launch standalone HTTP server when not running inside Vercel Serverless environment
+if (process.env.VERCEL !== '1') {
+  startServer();
+}
+
+export default app;
