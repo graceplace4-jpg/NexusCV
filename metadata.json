@@ -1,0 +1,6 @@
+{
+  "name": "NexusCV - Generador Ejecutivo de CV & Portafolio ATS",
+  "description": "Crea currículums ejecutivos de alto contraste aprobados por reclutadores con optimización ATS e IA, exportación a LinkedIn y portafolio web personal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
