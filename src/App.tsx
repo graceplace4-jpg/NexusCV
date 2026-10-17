@@ -16,7 +16,18 @@ export default function App() {
   const [cvData, setCvData] = useState<CVData>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : initialCVData;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Ensure default is 40-year-old formal woman image if not custom or outdated
+        if (!parsed.avatarUrl || parsed.avatarUrl.includes('executive_portrait_avatar')) {
+          parsed.avatarUrl = '/src/assets/images/executive_woman_formal_1792251757360.jpg';
+        }
+        if (!parsed.templateStyle) {
+          parsed.templateStyle = 'canva-two-col';
+        }
+        return parsed;
+      }
+      return initialCVData;
     } catch {
       return initialCVData;
     }
@@ -97,7 +108,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 print:hidden">
         {/* Autosave subtle indicator */}
         <div className="no-print flex items-center justify-between text-[11px] text-slate-500 mb-4 px-1">
           <div className="flex items-center gap-1.5">
@@ -107,7 +118,7 @@ export default function App() {
           </div>
 
           <div className="text-slate-400 hidden sm:block">
-            <span>Plantilla: Ejecutivo Corporativo de Alto Contraste</span>
+            <span>Plantilla: {!cvData.templateStyle || cvData.templateStyle === 'canva-two-col' ? 'Estilo Adjunto (2 Col)' : cvData.templateStyle === 'executive-one-col' ? 'Ejecutivo 1 Columna' : 'Minimalista'}</span>
             <span aria-hidden="true" className="mx-2">·</span>
             <span>A4 ATS-Verified</span>
           </div>

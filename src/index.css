@@ -27,11 +27,11 @@
   }
 
   /* Hide app navigation, tabs, action bars and editor during print */
-  .no-print, nav, header, aside, .editor-panel, .export-controls, .print-hidden {
+  .no-print, .editor-panel, .export-controls, .print-hidden {
     display: none !important;
   }
 
-  /* Make sure CV container fills the printable page cleanly */
+  /* Make sure CV container fills the printable page cleanly with exact background colors */
   .printable-cv-root {
     box-shadow: none !important;
     border: none !important;
@@ -39,14 +39,37 @@
     padding: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-    background: #ffffff !important;
-    color: #000000 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Keep high contrast text readable */
-  .printable-cv-root * {
-    color: #000000 !important;
-    border-color: #000000 !important;
+  .printable-cv-root aside {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 34% !important;
+    background-color: #f8fafc !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .printable-cv-root main {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 66% !important;
+    background-color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .printable-cv-root header {
+    display: block !important;
+  }
+
+  .printable-cv-root, .printable-cv-root * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .page-break-avoid {

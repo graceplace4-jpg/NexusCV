@@ -43,6 +43,8 @@ export interface ProjectItem {
   image?: string;
 }
 
+export type TemplateStyle = 'canva-two-col' | 'executive-one-col' | 'minimalist';
+
 export interface CVData {
   fullName: string;
   title: string;
@@ -54,6 +56,7 @@ export interface CVData {
   website: string;
   avatarUrl: string;
   summary: string;
+  templateStyle?: TemplateStyle;
   experiences: ExperienceItem[];
   education: EducationItem[];
   skills: SkillCategory[];

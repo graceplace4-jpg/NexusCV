@@ -326,14 +326,58 @@ export const CVEditor: React.FC<CVEditorProps> = ({
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Foto de Perfil (Ruta o URL)</label>
-              <input
-                type="text"
-                value={data.avatarUrl}
-                onChange={(e) => handlePersonalChange('avatarUrl', e.target.value)}
-                className="w-full bg-[#0a0d14] border border-slate-700 rounded px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 font-mono text-[11px]"
-              />
+            <div className="sm:col-span-2 bg-[#0d121f] border border-slate-700/80 rounded-lg p-3">
+              <label className="block text-xs font-semibold text-slate-200 mb-2">
+                Fotografía del CV (Mujer ejecutiva 40 años formal o personalizada)
+              </label>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <img
+                  src={data.avatarUrl || '/src/assets/images/executive_woman_formal_1792251757360.jpg'}
+                  alt="Avatar"
+                  className="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-sm shrink-0"
+                />
+                <div className="flex-1 w-full space-y-1.5">
+                  <input
+                    type="text"
+                    value={data.avatarUrl}
+                    onChange={(e) => handlePersonalChange('avatarUrl', e.target.value)}
+                    className="w-full bg-[#0a0d14] border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 font-mono text-[11px]"
+                    placeholder="URL de foto o ruta de archivo"
+                  />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handlePersonalChange(
+                          'avatarUrl',
+                          '/src/assets/images/executive_woman_formal_1792251757360.jpg'
+                        )
+                      }
+                      className="text-[11px] px-2 py-0.5 rounded bg-blue-600/20 text-blue-300 border border-blue-500/40 hover:bg-blue-600/30 transition-colors"
+                    >
+                      Usar foto ejecutiva (Mujer 40 años formal)
+                    </button>
+                    <label className="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 cursor-pointer transition-colors">
+                      Subir desde mi equipo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              handlePersonalChange('avatarUrl', reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

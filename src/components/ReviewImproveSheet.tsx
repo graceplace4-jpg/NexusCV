@@ -45,6 +45,62 @@ export const ReviewImproveSheet: React.FC<ReviewImproveSheetProps> = ({
   const [isLoadingProposals, setIsLoadingProposals] = useState(false);
   const [appliedProposal, setAppliedProposal] = useState(false);
 
+  const [isDirectUploading, setIsDirectUploading] = useState(false);
+  const [directUploadStatus, setDirectUploadStatus] = useState<string>('');
+
+  const handleDirectFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsDirectUploading(true);
+    setDirectUploadStatus('Leyendo archivo PDF...');
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const resultStr = reader.result as string;
+          const base64Data = resultStr.includes(',') ? resultStr.split(',')[1] : resultStr;
+          setDirectUploadStatus('Gemini 3.8 Flash extrayendo estructura del PDF...');
+
+          const res = await fetch('/api/cv/parse-document', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              base64Data,
+              mimeType: file.type || 'application/pdf',
+              fileName: file.name,
+            }),
+          });
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || 'Error al procesar el PDF');
+          }
+
+          const parsed = await res.json();
+          onChange(parsed);
+          setDirectUploadStatus('¡PDF cargado exitosamente!');
+          setTimeout(() => {
+            setIsDirectUploading(false);
+            setDirectUploadStatus('');
+          }, 1500);
+        } catch (err: any) {
+          console.error('Direct upload error:', err);
+          alert(err.message || 'Error al procesar el archivo PDF');
+          setIsDirectUploading(false);
+          setDirectUploadStatus('');
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error(err);
+      setIsDirectUploading(false);
+      setDirectUploadStatus('');
+    }
+  };
+
   const fetchPresentationProposals = async () => {
     setIsLoadingProposals(true);
     setAppliedProposal(false);
@@ -90,24 +146,49 @@ export const ReviewImproveSheet: React.FC<ReviewImproveSheetProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-          <button
-            onClick={onOpenUpload}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors shadow-sm"
+          {/* Direct File Picker (Native label/input that triggers immediately) */}
+          <input
+            id="sheet1-direct-pdf-input"
+            type="file"
+            accept=".pdf,application/pdf,.txt,.json,.doc,.docx"
+            onChange={handleDirectFileSelect}
+            disabled={isDirectUploading}
+            className="sr-only"
+          />
+          <label
+            htmlFor="sheet1-direct-pdf-input"
+            className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-500 cursor-pointer transition-all shadow-md active:scale-95 whitespace-nowrap"
           >
             <UploadCloud className="w-4 h-4" />
-            <span>Cargar Archivo de CV</span>
+            <span>{isDirectUploading ? directUploadStatus || 'Cargando PDF...' : 'Seleccionar Archivo PDF'}</span>
+          </label>
+
+          <button
+            onClick={onOpenUpload}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors whitespace-nowrap"
+            title="Abrir ventana con opción de arrastrar o pegar texto"
+          >
+            <span>Pegar Texto / Más</span>
           </button>
 
           <button
             onClick={fetchPresentationProposals}
             disabled={isLoadingProposals}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors disabled:opacity-50 whitespace-nowrap"
           >
             <Sparkles className={`w-3.5 h-3.5 text-blue-400 ${isLoadingProposals ? 'animate-spin' : ''}`} />
-            <span>{isLoadingProposals ? 'Generando...' : 'Propuestas de Mejora con IA'}</span>
+            <span>{isLoadingProposals ? 'Generando...' : 'Propuestas de Mejora'}</span>
           </button>
         </div>
       </div>
+
+      {/* Direct upload loading banner */}
+      {isDirectUploading && (
+        <div className="p-3.5 bg-blue-950/60 border border-blue-800 rounded-xl text-xs text-blue-200 flex items-center gap-3 animate-pulse">
+          <RefreshCw className="w-4 h-4 animate-spin text-blue-400 shrink-0" />
+          <span className="font-semibold">{directUploadStatus}</span>
+        </div>
+      )}
 
       {/* AI Presentation Proposals Banner */}
       {proposals && (
@@ -197,18 +278,65 @@ export const ReviewImproveSheet: React.FC<ReviewImproveSheetProps> = ({
 
         {/* Right Column: Live Printable Document Review */}
         <div className={`lg:col-span-6 ${mobileSubTab === 'preview' ? 'block' : 'hidden lg:block'}`}>
-          <div className="bg-[#111726] border border-slate-800 rounded-lg p-3 mb-3 flex items-center justify-between text-xs text-slate-300">
+          <div className="bg-[#111726] border border-slate-800 rounded-lg p-3 mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-300">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-blue-400" />
-              <span className="font-semibold text-white">Presentación Impresa A4 (Alto Contraste)</span>
+              <span className="font-semibold text-white">Presentación Impresa A4</span>
+              <span className="text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 px-1.5 py-0.5 rounded">
+                {data.templateStyle === 'executive-one-col'
+                  ? '1 Columna'
+                  : data.templateStyle === 'minimalist'
+                  ? 'Minimalista'
+                  : 'Estilo Adjunto (2 Col)'}
+              </span>
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="flex flex-wrap items-center gap-1.5">
+              <div className="bg-[#0b0f19] p-0.5 rounded border border-slate-800 flex items-center text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...data, templateStyle: 'canva-two-col' })}
+                  className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                    !data.templateStyle || data.templateStyle === 'canva-two-col'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                  title="Formato de 2 columnas con barra lateral y foto circular según el diseño adjunto"
+                >
+                  Estilo Adjunto
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...data, templateStyle: 'executive-one-col' })}
+                  className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                    data.templateStyle === 'executive-one-col'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                  title="Formato corporativo tradicional 1 columna de alto contraste"
+                >
+                  1 Columna
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...data, templateStyle: 'minimalist' })}
+                  className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                    data.templateStyle === 'minimalist'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                  title="Formato minimalista editorial"
+                >
+                  Minimalista
+                </button>
+              </div>
+
               <button
                 onClick={onPrintPDF}
-                className="text-xs px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium flex items-center gap-1.5 transition-colors shadow-sm"
+                className="text-xs px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium flex items-center gap-1.5 transition-colors shadow-sm ml-1"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Descargar PDF</span>
+                <span>PDF A4</span>
               </button>
             </div>
           </div>

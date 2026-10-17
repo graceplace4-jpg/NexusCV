@@ -602,9 +602,53 @@ export const GuidedBuilderSheet: React.FC<GuidedBuilderSheetProps> = ({
 
         {/* Right Column: Live A4 Visual Preview */}
         <div className="lg:col-span-5">
-          <div className="bg-[#111726] border border-slate-800 rounded-lg p-3 mb-3 flex items-center justify-between text-xs text-slate-300">
-            <span className="font-semibold text-white">Vista Previa Dinámica del CV</span>
-            <span className="text-[11px] text-slate-500">Se actualiza en tiempo real</span>
+          <div className="bg-[#111726] border border-slate-800 rounded-lg p-3 mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
+            <div>
+              <span className="font-semibold text-white">Vista Previa Dinámica</span>
+              <span className="ml-1.5 text-[10px] bg-blue-500/20 text-blue-300 border border-blue-500/30 px-1.5 py-0.5 rounded">
+                {!data.templateStyle || data.templateStyle === 'canva-two-col'
+                  ? 'Estilo Adjunto (2 Col)'
+                  : data.templateStyle === 'executive-one-col'
+                  ? '1 Columna'
+                  : 'Minimalista'}
+              </span>
+            </div>
+
+            <div className="bg-[#0b0f19] p-0.5 rounded border border-slate-800 flex items-center text-[10px]">
+              <button
+                type="button"
+                onClick={() => onChange({ ...data, templateStyle: 'canva-two-col' })}
+                className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                  !data.templateStyle || data.templateStyle === 'canva-two-col'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Estilo Adjunto
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ ...data, templateStyle: 'executive-one-col' })}
+                className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                  data.templateStyle === 'executive-one-col'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                1 Col
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ ...data, templateStyle: 'minimalist' })}
+                className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                  data.templateStyle === 'minimalist'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Mini
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto rounded-lg shadow-2xl pb-4">

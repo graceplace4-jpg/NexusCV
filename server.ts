@@ -422,11 +422,17 @@ Reglas estrictas:
     let contentsPayload: any;
 
     if (base64Data) {
+      const effectiveMimeType =
+        (req.body.fileName && req.body.fileName.toLowerCase().endsWith('.pdf')) ||
+        (mimeType && mimeType.toLowerCase().includes('pdf'))
+          ? 'application/pdf'
+          : mimeType || 'application/pdf';
+
       contentsPayload = [
         {
           inlineData: {
             data: base64Data,
-            mimeType: mimeType || 'application/pdf',
+            mimeType: effectiveMimeType,
           },
         },
         {
@@ -437,13 +443,19 @@ Reglas estrictas:
       contentsPayload = `${promptText}\n\nDocumento / Texto del CV:\n"""\n${rawText}\n"""`;
     }
 
-    const response = await ai.models.generateContent({
+    const generatePromise = ai.models.generateContent({
       model: 'gemini-3.8-flash',
       contents: contentsPayload,
       config: {
         responseMimeType: 'application/json',
       },
     });
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('El procesamiento del documento tardó demasiado. Por favor intenta de nuevo.')), 25000)
+    );
+
+    const response: any = await Promise.race([generatePromise, timeoutPromise]);
 
     const parsed = JSON.parse(response.text || '{}');
 
