@@ -15,12 +15,14 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
 }) => {
   const currentStyle: TemplateStyle = data.templateStyle || templateStyle || 'canva-two-col';
 
-  // Fallback avatar URL is the 40-year-old formal executive woman portrait
-  const cleanAvatarUrl = (data.avatarUrl || '').replace(/^\/src\/assets\/images\//, '/images/');
-  const avatarImageSrc =
-    cleanAvatarUrl && !cleanAvatarUrl.includes('executive_portrait_avatar')
-      ? cleanAvatarUrl
-      : '/images/executive_woman_formal_1792251757360.jpg';
+  // Only display photograph if explicitly attached/uploaded by the user and enabled
+  const rawAvatarUrl = (data.avatarUrl || '').trim();
+  const cleanAvatarUrl = rawAvatarUrl.replace(/^\/src\/assets\/images\//, '/images/');
+  const hasAttachedPhoto = Boolean(
+    showAvatar &&
+    cleanAvatarUrl &&
+    !cleanAvatarUrl.includes('executive_portrait_avatar')
+  );
 
   // ==========================================
   // FORMAT 1: CANVA 2-COLUMN (ESTILO ADJUNTO)
@@ -30,20 +32,15 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
       <article className="printable-cv-root bg-white text-slate-900 shadow-2xl mx-auto w-full max-w-[210mm] min-h-[297mm] border border-slate-200 text-[12.5px] leading-relaxed transition-all flex flex-col md:flex-row overflow-hidden font-sans">
         {/* LEFT COLUMN / SIDEBAR (34% width with subtle stone/slate tint) */}
         <aside className="w-full md:w-[34%] bg-[#f8fafc] border-b md:border-b-0 md:border-r border-slate-200/90 p-6 sm:p-7 flex flex-col gap-5 shrink-0 print:bg-[#f8fafc]">
-          {/* Circular Executive Portrait (Woman 40 years old in formal navy suit) */}
-          {showAvatar && (
+          {/* Circular Executive Portrait (Only rendered if user attached a photo) */}
+          {hasAttachedPhoto && (
             <div className="flex justify-center pt-1 pb-1">
               <div className="relative">
                 <img
-                  src={avatarImageSrc}
+                  src={cleanAvatarUrl}
                   alt={data.fullName || 'Fotografía Profesional'}
                   className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-white shadow-md ring-1 ring-slate-200/80"
                   referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    // Fallback to formal woman image
-                    (e.target as HTMLImageElement).src =
-                      '/images/executive_woman_formal_1792251757360.jpg';
-                  }}
                 />
                 <span className="sr-only">Foto formal de perfil profesional</span>
               </div>
@@ -348,10 +345,10 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
             </div>
           </div>
 
-          {showAvatar && (
+          {hasAttachedPhoto && (
             <div className="shrink-0">
               <img
-                src={avatarImageSrc}
+                src={cleanAvatarUrl}
                 alt={data.fullName}
                 className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-slate-300 shadow-sm"
                 referrerPolicy="no-referrer"
@@ -476,9 +473,9 @@ export const CVDocument: React.FC<CVDocumentProps> = ({
             <span>{data.location}</span>
           </div>
         </div>
-        {showAvatar && (
+        {hasAttachedPhoto && (
           <img
-            src={avatarImageSrc}
+            src={cleanAvatarUrl}
             alt={data.fullName}
             className="w-20 h-20 rounded-full object-cover border border-slate-200"
           />

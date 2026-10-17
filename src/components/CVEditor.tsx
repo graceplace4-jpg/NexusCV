@@ -326,39 +326,48 @@ export const CVEditor: React.FC<CVEditorProps> = ({
               />
             </div>
 
-            <div className="sm:col-span-2 bg-[#0d121f] border border-slate-700/80 rounded-lg p-3">
-              <label className="block text-xs font-semibold text-slate-200 mb-2">
-                Fotografía del CV (Mujer ejecutiva 40 años formal o personalizada)
-              </label>
+            <div className="sm:col-span-2 bg-[#0d121f] border border-slate-700/80 rounded-lg p-3.5">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Fotografía del CV (Opcional — solo si se adjunta)</span>
+                </label>
+                <span className="text-[10px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded font-medium">
+                  {data.avatarUrl ? 'Foto adjuntada' : 'Sin foto (Estándar ATS)'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 mb-3 leading-relaxed">
+                El formato final del CV se presenta sin fotografía para cumplir con filtros ATS y estándares globales. Solo se mostrará si decides adjuntar un archivo de imagen.
+              </p>
+
               <div className="flex flex-col sm:flex-row items-center gap-3">
-                <img
-                  src={data.avatarUrl ? data.avatarUrl.replace(/^\/src\/assets\/images\//, '/images/') : '/images/executive_woman_formal_1792251757360.jpg'}
-                  alt="Avatar"
-                  className="w-14 h-14 rounded-full object-cover border-2 border-blue-500 shadow-sm shrink-0"
-                />
-                <div className="flex-1 w-full space-y-1.5">
-                  <input
-                    type="text"
-                    value={data.avatarUrl}
-                    onChange={(e) => handlePersonalChange('avatarUrl', e.target.value)}
-                    className="w-full bg-[#0a0d14] border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 font-mono text-[11px]"
-                    placeholder="URL de foto o ruta de archivo"
-                  />
-                  <div className="flex flex-wrap items-center gap-2">
+                {data.avatarUrl ? (
+                  <div className="relative group shrink-0">
+                    <img
+                      src={data.avatarUrl.replace(/^\/src\/assets\/images\//, '/images/')}
+                      alt="Avatar adjuntado"
+                      className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500 shadow-sm"
+                    />
                     <button
                       type="button"
-                      onClick={() =>
-                        handlePersonalChange(
-                          'avatarUrl',
-                          '/images/executive_woman_formal_1792251757360.jpg'
-                        )
-                      }
-                      className="text-[11px] px-2 py-0.5 rounded bg-blue-600/20 text-blue-300 border border-blue-500/40 hover:bg-blue-600/30 transition-colors"
+                      onClick={() => handlePersonalChange('avatarUrl', '')}
+                      className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full p-1 shadow hover:bg-red-500 transition-colors"
+                      title="Retirar fotografía"
                     >
-                      Usar foto ejecutiva (Mujer 40 años formal)
+                      <Trash2 className="w-3 h-3" />
                     </button>
-                    <label className="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 cursor-pointer transition-colors">
-                      Subir desde mi equipo
+                  </div>
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-slate-800 border-2 border-dashed border-slate-600 flex flex-col items-center justify-center text-slate-400 shrink-0">
+                    <User className="w-6 h-6 text-slate-500" />
+                  </div>
+                )}
+
+                <div className="flex-1 w-full space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label className="text-[11.5px] px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer transition-colors flex items-center gap-1.5 shadow-sm">
+                      <UploadCloud className="w-3.5 h-3.5" />
+                      <span>{data.avatarUrl ? 'Cambiar fotografía' : 'Adjuntar fotografía'}</span>
                       <input
                         type="file"
                         accept="image/*"
@@ -375,7 +384,42 @@ export const CVEditor: React.FC<CVEditorProps> = ({
                         }}
                       />
                     </label>
+
+                    {data.avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={() => handlePersonalChange('avatarUrl', '')}
+                        className="text-[11.5px] px-2.5 py-1.5 rounded bg-red-950/40 text-red-300 border border-red-800/60 hover:bg-red-900/40 transition-colors flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Retirar foto del CV</span>
+                      </button>
+                    )}
+
+                    {!data.avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handlePersonalChange(
+                            'avatarUrl',
+                            '/images/executive_woman_formal_1792251757360.jpg'
+                          )
+                        }
+                        className="text-[11px] px-2 py-1 rounded bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 hover:bg-slate-700 transition-colors"
+                        title="Probar cómo luce con fotografía de muestra formal"
+                      >
+                        Probar con foto de muestra
+                      </button>
+                    )}
                   </div>
+
+                  <input
+                    type="text"
+                    value={data.avatarUrl || ''}
+                    onChange={(e) => handlePersonalChange('avatarUrl', e.target.value)}
+                    className="w-full bg-[#0a0d14] border border-slate-700 rounded px-2.5 py-1 text-xs text-slate-300 focus:outline-none focus:border-blue-500 font-mono text-[11px]"
+                    placeholder="Opcional: URL directa de imagen (https://...)"
+                  />
                 </div>
               </div>
             </div>

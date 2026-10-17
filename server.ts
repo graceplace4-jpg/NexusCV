@@ -468,7 +468,7 @@ Reglas estrictas:
       linkedin: parsed.linkedin || '',
       github: parsed.github || '',
       website: parsed.website || '',
-      avatarUrl: parsed.avatarUrl || '/images/executive_woman_formal_1792251757360.jpg',
+      avatarUrl: parsed.avatarUrl || '',
       summary: parsed.summary || '',
       experiences: (parsed.experiences || []).map((e: any, idx: number) => ({
         ...e,

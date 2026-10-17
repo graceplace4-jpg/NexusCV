@@ -18,9 +18,14 @@ export default function App() {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Ensure default is 40-year-old formal woman image if not custom or outdated
-        if (!parsed.avatarUrl || parsed.avatarUrl.includes('executive_portrait_avatar') || parsed.avatarUrl.startsWith('/src/assets/images/')) {
-          parsed.avatarUrl = '/images/executive_woman_formal_1792251757360.jpg';
+        // Only keep photo if explicitly attached by user (remove previous demo photos)
+        if (
+          parsed.avatarUrl &&
+          (parsed.avatarUrl.includes('executive_woman_formal') ||
+           parsed.avatarUrl.includes('executive_portrait_avatar') ||
+           parsed.avatarUrl.startsWith('/src/assets/images/'))
+        ) {
+          parsed.avatarUrl = '';
         }
         if (!parsed.templateStyle) {
           parsed.templateStyle = 'canva-two-col';
